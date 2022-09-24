@@ -21,5 +21,4 @@ add_executable(RegularSolver
         Collector.h
         RegularExpression.cpp
         RegularExpression.h
-        Cleaner.cpp
-        Cleaner.h)
+        )
