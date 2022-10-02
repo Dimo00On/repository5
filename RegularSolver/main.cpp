@@ -6,6 +6,7 @@
 #include "BuilderPDKA.h"
 #include "RepresenterPDKA.h"
 #include "Collector.h"
+#include "Minimizer.h"
 
 int main() {
     int AlphabetSize;
@@ -28,6 +29,9 @@ int main() {
     dkaBuilder.build();
     delete representer;
     builder.inverseTerminals();
+    Minimizer minimizer(&builder, AlphabetSize, alphabet);
+    minimizer.minimize();
+    minimizer.rebuild();
     auto pdkaRepresenter = new RepresenterPDKA(builder.result);
     pdkaRepresenter->representPDKA();
     Collector collector(pdkaRepresenter);

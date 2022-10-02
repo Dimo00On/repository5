@@ -8,9 +8,6 @@
 #include <vector>
 #pragma once
 
-const int AlphabetBegin = 97;
-const int AlphabetEnd = 123;
-
 class Vertex;
 
 class Edge {
@@ -29,6 +26,7 @@ public:
     std::unordered_set<Edge*> edges;
     int cntEntering = 0;
     uint64_t number = -1;
+    int newNumber = -1;
 
     Vertex();
     Vertex(bool isTerminal);

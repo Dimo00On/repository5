@@ -69,7 +69,6 @@ Graph* Builder::star(Graph* graph) {
 
 Graph* Builder::createGraph(char letter) {
     auto newGraph = new Graph(letter);
-    ++newGraph->begin->cntEntering;
     return newGraph;
 }
 

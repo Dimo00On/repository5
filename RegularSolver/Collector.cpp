@@ -82,15 +82,27 @@ RegularExpression Collector::collect() {
     //=>возможно остался только цикл в 1 и ребро из 1 в 0
     RegularExpression ans;
     auto loopIt = info->edges[1].find(1);
+    bool noLoop = false;
     if (loopIt != info->edges[1].end() && loopIt->second != "1") {
         if (loopIt->second.length() == 1) {
             (ans = loopIt->second) += "*";
         } else {
             ((ans = "(") += loopIt->second) += ")*";
         }
+    } else {
+        noLoop = true;
     }
-    ans += info->edges[1][0];
-    if (ans.length() == 0) {
+    auto end = info->edges[1][0];
+    if (!end.isSum) {
+        ans += (end == "1" ? "" : end);
+    } else {
+        if (noLoop) {
+            ans += end;
+        } else {
+            ((ans += "(") += end) += ")";
+        }
+    }
+    if (end.length() == 0) {
         ans = "0";
     }
     return ans;

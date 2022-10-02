@@ -22,4 +22,6 @@ add_executable(RegularSolver
         RegularExpression.cpp
         RegularExpression.h
         Cleaner.cpp
-        Cleaner.h)
+        Cleaner.h
+        Minimizer.cpp
+        Minimizer.h)
