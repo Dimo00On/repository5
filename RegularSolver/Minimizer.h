@@ -1,5 +1,6 @@
 #include "basic_classes.h"
 #include "Builder.h"
+#pragma once
 
 class Minimizer {
 public:
