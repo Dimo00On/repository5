@@ -18,9 +18,9 @@ bool GraphChecker::isSameGraphs(Minimizer& firstMinimizer, Minimizer& secondMini
     std::queue<Vertex*> toHandle;
     toHandle.push(first->begin);
     std::unordered_set<Vertex*> handled;
+    handled.insert(first->begin);
     while (!toHandle.empty()) {
         auto vertex = toHandle.front();
-        handled.insert(vertex);
         toHandle.pop();
         for (auto letter : alphabet) {
             auto to = firstMinimizer.edges[vertex][letter];
@@ -37,6 +37,7 @@ bool GraphChecker::isSameGraphs(Minimizer& firstMinimizer, Minimizer& secondMini
             }
             if (!handled.count(to)) {
                 toHandle.push(to);
+                handled.insert(to);
             }
         }
     }
