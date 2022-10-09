@@ -36,3 +36,6 @@ std::ostream& operator<<(std::ostream& out, const RegularExpression& expr) {
     out << expr.word;
     return out;
 }
+RegularExpression::operator std::string() const {
+    return word;
+}

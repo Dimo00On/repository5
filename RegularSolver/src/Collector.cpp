@@ -17,37 +17,40 @@ void Collector::makeLoopExpression(RegularExpression& loop, const RegularExpress
 void Collector::makeEdgeExpression(RegularExpression& edge, const RegularExpression& begin,
                                    const RegularExpression& loop, const RegularExpression& loopInsideExpr,
                                    const RegularExpression& end, bool edgeExist) const {
-    if (edgeExist) {
-        if (begin == loopInsideExpr && edge == end) {
-            edge = "";
-        } else {
-            if (end == loopInsideExpr && edge == begin) {
-                if (edge.isSum) {
-                    ((edge = "(") += begin) += ")";
-                }
-                edge += loop;
-                return;
-            }
-            edge += "+";
-            if (!begin.isSum) {
-                edge += (begin == "1" ? "" : begin);
-            } else {
-                ((edge += "(") += begin) += ")";
-            }
-        }
+    if (edgeExist && edge.length() >= 1) {
+        edge += "+";
+        edge.isSum = true;
     } else {
-        edge = (begin == "1" ? "" : begin);
+        edge.isSum = false;
     }
-    edge += loop;
-    if (!end.isSum) {
-        edge += (end == "1" ? "" : end);
+    RegularExpression add;
+
+
+    if (!begin.isSum) {
+        add += (begin == "1" ? "" : begin);
     } else {
-        ((edge += "(") += end) += ")";
+        add += "(";
+        add += begin;
+        add += ")";
+    }
+    add += loop;
+    if (!end.isSum) {
+        add += (end == "1" ? "" : end);
+    } else {
+        add += "(";
+        add += end;
+        add += ")";
+    }
+    if (add.length() == 0) {
+        add = "1";
+    }
+    edge += add;
+    if (edge.length() == 0) {
+        edge = "1";
     }
 }
 
 RegularExpression Collector::collect() {
-    int temp = 0;
     for (int curV = info->size - 1; curV >= 2; --curV) {
         RegularExpression loop;
         auto loopIt = info->edges[curV].find(curV);
@@ -71,7 +74,6 @@ RegularExpression Collector::collect() {
                     edgeIt = info->edges[from].find(to.first);
                 }
                 makeEdgeExpression(edgeIt->second, begin, loop, loopInsideExpr, end, edgeExist);
-                ++temp;
             }
             info->edges[from].erase(curV);
         }
@@ -92,18 +94,25 @@ RegularExpression Collector::collect() {
     } else {
         noLoop = true;
     }
-    auto end = info->edges[1][0];
-    if (!end.isSum) {
-        ans += (end == "1" ? "" : end);
+    auto endIt = info->edges[1].find(0);
+    if (endIt == info->edges[1].end()) {
+        ans = "0";
     } else {
+        auto end = info->edges[1][0];
         if (noLoop) {
             ans += end;
         } else {
-            ((ans += "(") += end) += ")";
+            if (!end.isSum) {
+                ans += (end == "1" ? "" : end);
+            } else {
+                ans += "(";
+                ans += end;
+                ans += ")";
+            }
         }
-    }
-    if (end.length() == 0) {
-        ans = "0";
+        if (ans.length() == 0) {
+            ans = "1";
+        }
     }
     return ans;
 }

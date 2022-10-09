@@ -5,50 +5,52 @@ BuilderPDKA::BuilderPDKA(Builder* builder, RepresenterNKA* representer) :
 builder(builder), representer(representer) {}
 
 Graph* BuilderPDKA::build() {
-    std::unordered_map<uint64_t, Vertex*> numberToPtr;
+    std::vector<Vertex*> numberToPtr(2);
     Graph* graph = builder->createGraph((builder->result->begin->isTerminal ? '1' : '0'));
-    uint64_t size = builder->result->size();
-    graph->begin->number = (uint64_t)1 << (builder->result->begin->number);
+    int cnt = 1;
+    graph->begin->number = 1;
     std::queue<uint64_t> toHandle;
-    std::unordered_set<uint64_t> exist;
-    toHandle.push(graph->begin->number);
-    numberToPtr[graph->begin->number] = graph->begin;
+    std::map<std::set<uint64_t>, uint64_t> exist;
+    std::vector<std::set<uint64_t>> numberToSet;
+    numberToSet.emplace_back();
+    numberToSet.push_back({builder->result->begin->number});
+    exist[{}] = 0;
+    exist[{builder->result->begin->number}] = cnt;
+    ++cnt;
     graph->mock = graph->createVertex();
     graph->mock->number = 0;
+    numberToPtr[graph->begin->number] = graph->begin;
     numberToPtr[0] = graph->mock;
+    toHandle.push(1);
     toHandle.push(0);
-    exist.insert(0);
-    exist.insert(graph->begin->number);
     while (!toHandle.empty()) {
-        uint64_t position = toHandle.front();
+        auto position = toHandle.front();
         toHandle.pop();
-        std::unordered_set<uint64_t> vertexes;
-        for (uint64_t i = 0; i < size; ++i) {
-            if ((position >> i) & (uint64_t)1) {
-                vertexes.insert(i);
-            }
-        }
+        auto vertexes = numberToSet[position];
         for (auto letter : builder->alphabet) {
-            uint64_t newPos = 0;
+            std::set<uint64_t> newPos;
             bool isTerminal = false;
             for (auto vertex: vertexes) {
                 if (!representer->edges[vertex].count(letter)) {
                     representer->edges[vertex][letter] = std::unordered_set<uint64_t>();
                 }
                 for (auto i : representer->edges[vertex][letter]) {
-                    newPos |= ((uint64_t)1 << i);
+                    newPos.insert(i);
                     isTerminal |= representer->numberToPtr[i]->isTerminal;
                 }
             }
             if (!exist.count(newPos)) {
-                numberToPtr[newPos] = graph->createVertex(isTerminal);
+                numberToPtr.push_back(graph->createVertex(isTerminal));
+                numberToPtr[cnt]->number = cnt;
+                numberToSet.push_back(newPos);
                 if (isTerminal) {
-                    graph->terminal.insert(numberToPtr[newPos]);
+                    graph->terminal.insert(numberToPtr[cnt]);
                 }
-                toHandle.push(newPos);
-                exist.insert(newPos);
+                toHandle.push(cnt);
+                exist[newPos] = cnt;
+                ++cnt;
             }
-            Vertex* to = numberToPtr[newPos];
+            Vertex* to = numberToPtr[exist[newPos]];
             numberToPtr[position]->createEdge(to, std::string(1, letter));
         }
     }

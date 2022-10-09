@@ -9,6 +9,7 @@ public:
     RegularExpression();
     RegularExpression(std::string word);
     RegularExpression(const char* word);
+    explicit operator std::string() const;
 
     RegularExpression& operator+=(const RegularExpression& other);
     RegularExpression& operator=(const RegularExpression& other);
