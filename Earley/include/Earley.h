@@ -12,11 +12,12 @@ public:
 protected:
   int start;
   std::unordered_map<int, std::vector<Rule>> rules;
-  std::vector<std::unordered_map<int, std::set<Rule>>> middle_config_packs;
-  std::vector<std::unordered_map<int, std::set<Rule>>> end_config_packs;
+  std::vector<std::vector<std::set<Rule>>> middle_config_packs;
+  std::vector<std::vector<std::set<Rule>>> end_config_packs;
   std::vector<int> word;
+  int length;
 
   void Scan(int step, std::set<Configuration>& new_configs);
-  void Predict(int step, std::set<Configuration>& new_configs);
-  void Complete(int step, std::set<Configuration>& last_new_configs);
+  bool Predict(int step, std::set<Configuration>& new_configs);
+  bool Complete(int step, std::set<Configuration>& last_new_configs);
 };
