@@ -51,7 +51,7 @@ bool MakeTest(const std::string& test_string, const std::string& ans_file_name) 
   }
   fin1.close();
   fin2.close();
-  //clear();
+  clear();
   return answer;
 }
 
